@@ -161,11 +161,7 @@ pre {
     font-weight: 700;
   }
 }
-.editor-rendor {
-  /* position: absolute;
-  width: 100%;
-  top: 0;
-  left: 0;
-  z-index: 100;
-  opacity: 0.2; */
+
+.ProseMirror .is-empty::before{
+  content: "输入'/'打开指令" !important;
 }

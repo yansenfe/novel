@@ -74,7 +74,7 @@ const Command = Extension.create({
 const getSuggestionItems = ({ query }: { query: string }) => {
   return [
     {
-      title: "继续写作",
+      title: "续写",
       description: "使用AI来扩展你的思维。",
       searchTerms: ["gpt"],
       icon: <Magic className="w-7 text-black" />,
@@ -284,7 +284,7 @@ const CommandList = ({
         command: item.title,
       });
       if (item) {
-        if (item.title === "继续写作") {
+        if (item.title === "续写") {
           console.log("editor_______________",editor);
           console.log("getPrevText+++++++++++++",getPrevText(editor, {
             chars: 5000,
@@ -373,7 +373,7 @@ const CommandList = ({
             onClick={() => selectItem(index)}
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-md border border-stone-200 bg-white">
-              {item.title === "继续写作" && isLoading ? (
+              {item.title === "续写" && isLoading ? (
                 <LoadingCircle />
               ) : (
                 item.icon

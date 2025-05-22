@@ -25,7 +25,7 @@ import tippy from "tippy.js";
 import { uploadFn } from "./image-upload";
 export const suggestionItems = createSuggestionItems([
   {
-    title: "继续写作",
+    title: "续写",
     description: "使用AI来扩展你的思维。",
     icon: <Magic className="w-7 text-black" />,
   },
@@ -183,7 +183,7 @@ const CommandList = ({
     (index: number) => {
       const item = items[index];
       if (item) {
-        if (item.title === "继续写作") {
+        if (item.title === "续写") {
           setSomeData("continue");
           setIsContinue(true);
         } else {
@@ -248,7 +248,7 @@ const CommandList = ({
             onClick={() => selectItem(index)}
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-md border border-stone-200 bg-white">
-              {item.title === "继续写作" && isContinue ? (
+              {item.title === "续写" && isContinue ? (
                 <LoadingCircle />
               ) : (
                 item.icon

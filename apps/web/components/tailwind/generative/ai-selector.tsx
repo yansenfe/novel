@@ -57,7 +57,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
       {isLoading && (
         <div className="flex h-12 w-full items-center px-4 text-sm font-medium text-muted-foreground text-purple-500">
           <Magic className="mr-2 h-4 w-4 shrink-0  " />
-          AI is thinking
+          AI 思考中
           <div className="ml-2 mt-1">
             <CrazySpinner />
           </div>

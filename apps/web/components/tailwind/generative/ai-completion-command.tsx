@@ -33,7 +33,7 @@ const AICompletionCommands = ({
           }}
         >
           <Check className="h-4 w-4 text-muted-foreground" />
-          Replace selection
+          替换选择的文案
         </CommandItem>
         <CommandItem
           className="gap-2 px-4"
@@ -48,7 +48,7 @@ const AICompletionCommands = ({
           }}
         >
           <TextQuote className="h-4 w-4 text-muted-foreground" />
-          Insert below
+          添加到下面
         </CommandItem>
       </CommandGroup>
       <CommandSeparator />
@@ -56,7 +56,7 @@ const AICompletionCommands = ({
       <CommandGroup>
         <CommandItem onSelect={onDiscard} value="thrash" className="gap-2 px-4">
           <TrashIcon className="h-4 w-4 text-muted-foreground" />
-          Discard
+          丢弃
         </CommandItem>
       </CommandGroup>
     </>
