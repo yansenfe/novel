@@ -95,7 +95,6 @@
   }
 }
 
-
 pre {
   background: #0d0d0d;
   border-radius: 0.5rem;
@@ -161,4 +160,12 @@ pre {
   .hljs-strong {
     font-weight: 700;
   }
+}
+.editor-rendor {
+  /* position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  opacity: 0.2; */
 }

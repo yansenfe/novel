@@ -58,14 +58,13 @@ const AISelectorCommands = ({ onSelect }: AISelectorCommandsProps) => {
           onSelect={() => {
             const pos = editor.state.selection.from;
             const text = getPrevText(editor, pos);
-            console.log("onSelect____________", onSelect);
             onSelect(text, "continue");
           }}
           value="continue"
           className="gap-2 px-4"
         >
           <StepForward className="h-4 w-4 text-purple-500" />
-          Continue writing
+          继续写作
         </CommandItem>
       </CommandGroup>
     </>

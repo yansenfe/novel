@@ -1,3 +1,4 @@
+// import { EditorBubble, removeAIHighlight, useEditor } from "@/packages/novel/src";
 import { EditorBubble, removeAIHighlight, useEditor } from "novel";
 import { Fragment, type ReactNode, useEffect } from "react";
 import { Button } from "../ui/button";
@@ -11,9 +12,8 @@ interface GenerativeMenuSwitchProps {
 }
 const GenerativeMenuSwitch = ({ children, open, onOpenChange }: GenerativeMenuSwitchProps) => {
   const { editor } = useEditor();
-
   useEffect(() => {
-    if (!open) removeAIHighlight(editor);
+    if (!open && editor) removeAIHighlight(editor);
   }, [open]);
   return (
     <EditorBubble
@@ -36,7 +36,7 @@ const GenerativeMenuSwitch = ({ children, open, onOpenChange }: GenerativeMenuSw
             size="sm"
           >
             <Magic className="h-5 w-5" />
-            Ask AI
+            问 AI
           </Button>
           {children}
         </Fragment>

@@ -1,3 +1,7 @@
+"use client";
+import { AppContext } from "@/contexts/AppContext";
+import LoadingCircle from "@/ui/icons/loading-circle";
+import Magic from "@/ui/icons/magic";
 import { ReactRenderer } from "@tiptap/react";
 import { useCompletion } from "ai/react";
 import {
@@ -9,37 +13,25 @@ import {
   ImageIcon,
   List,
   ListOrdered,
-  MessageSquarePlus,
   Text,
   TextQuote,
 } from "lucide-react";
-import { Command, createSuggestionItems, getPrevText, useEditor } from "novel";
+import { Command, createSuggestionItems, useEditor } from "novel";
+import React from "react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useContext } from "react";
+import { toast } from "sonner";
 import tippy from "tippy.js";
 import { uploadFn } from "./image-upload";
 export const suggestionItems = createSuggestionItems([
   {
-    title: "Continue writing",
-    description: "Use AI to expand your thoughts.",
-    icon: <MessageSquarePlus size={18} />,
-    command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).run();
-      getPrevText(editor, {
-        chars: 5000,
-        offset: 1,
-      });
-      console.log(
-        "prev text",
-        getPrevText(editor, {
-          chars: 5000,
-          offset: 1,
-        }),
-      );
-    },
+    title: "继续写作",
+    description: "使用AI来扩展你的思维。",
+    icon: <Magic className="w-7 text-black" />,
   },
   {
-    title: "Text",
-    description: "Just start typing with plain text.",
+    title: "文本",
+    description: "纯文本编辑",
     searchTerms: ["p", "paragraph"],
     icon: <Text size={18} />,
     command: ({ editor, range }) => {
@@ -47,8 +39,8 @@ export const suggestionItems = createSuggestionItems([
     },
   },
   {
-    title: "To-do List",
-    description: "Track tasks with a to-do list.",
+    title: "待办清单",
+    description: "使用待办事项列表跟踪任务。",
     searchTerms: ["todo", "task", "list", "check", "checkbox"],
     icon: <CheckSquare size={18} />,
     command: ({ editor, range }) => {
@@ -56,8 +48,8 @@ export const suggestionItems = createSuggestionItems([
     },
   },
   {
-    title: "Heading 1",
-    description: "Big section heading.",
+    title: "一级标题",
+    description: "H1 标题",
     searchTerms: ["title", "big", "large"],
     icon: <Heading1 size={18} />,
     command: ({ editor, range }) => {
@@ -65,8 +57,8 @@ export const suggestionItems = createSuggestionItems([
     },
   },
   {
-    title: "Heading 2",
-    description: "Medium section heading.",
+    title: "二级标题",
+    description: "H2 标题",
     searchTerms: ["subtitle", "medium"],
     icon: <Heading2 size={18} />,
     command: ({ editor, range }) => {
@@ -74,8 +66,8 @@ export const suggestionItems = createSuggestionItems([
     },
   },
   {
-    title: "Heading 3",
-    description: "Small section heading.",
+    title: "三级标题",
+    description: "H3 标题",
     searchTerms: ["subtitle", "small"],
     icon: <Heading3 size={18} />,
     command: ({ editor, range }) => {
@@ -83,8 +75,8 @@ export const suggestionItems = createSuggestionItems([
     },
   },
   {
-    title: "Bullet List",
-    description: "Create a simple bullet list.",
+    title: "无序列表",
+    description: "创建一个无序列表",
     searchTerms: ["unordered", "point"],
     icon: <List size={18} />,
     command: ({ editor, range }) => {
@@ -92,8 +84,8 @@ export const suggestionItems = createSuggestionItems([
     },
   },
   {
-    title: "Numbered List",
-    description: "Create a list with numbering.",
+    title: "有序列表",
+    description: "创建一个有序列表",
     searchTerms: ["ordered"],
     icon: <ListOrdered size={18} />,
     command: ({ editor, range }) => {
@@ -101,23 +93,23 @@ export const suggestionItems = createSuggestionItems([
     },
   },
   {
-    title: "Quote",
-    description: "Capture a quote.",
+    title: "引用",
+    description: "设置引用",
     searchTerms: ["blockquote"],
     icon: <TextQuote size={18} />,
     command: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleNode("paragraph", "paragraph").toggleBlockquote().run(),
   },
   {
-    title: "Code",
-    description: "Capture a code snippet.",
+    title: "代码块",
+    description: "捕获代码片段。",
     searchTerms: ["codeblock"],
     icon: <Code size={18} />,
     command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
   },
   {
-    title: "Image",
-    description: "Upload an image from your computer.",
+    title: "图片",
+    description: "上传图片",
     searchTerms: ["photo", "picture", "media"],
     icon: <ImageIcon size={18} />,
     command: ({ editor, range }) => {
@@ -162,25 +154,25 @@ const CommandList = ({
   range: any;
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [oldCompletion, setOldCompletion] = useState("");
+  const { someData, setSomeData } = useContext(AppContext) || {}; // 使用 useContext 钩子访问上下文值
   const { editor } = useEditor();
+  const [selectionTo, setSelectionTo] = useState<number>(0);
+
+  const [isContinue, setIsContinue] = useState(false);
+
   const { completion, complete, isLoading } = useCompletion({
     // id: "novel",
     api: "/api/generate",
     onResponse: (response) => {
       if (response.status === 429) {
         toast.error("You have reached your request limit for the day.");
-        // va.track("Rate Limit Reached");
         return;
       }
-      // editor.chain().focus().deleteRange(range).run();
-      console.log("response", response);
     },
     onFinish: (_prompt, completion) => {
-      // highlight the generated text
-      editor.commands.setTextSelection({
-        from: range.from,
-        to: range.from + completion.length,
-      });
+      editor.chain().focus().run();
+      stopSetContent();
     },
     onError: () => {
       toast.error("Something went wrong.");
@@ -190,25 +182,16 @@ const CommandList = ({
   const selectItem = useCallback(
     (index: number) => {
       const item = items[index];
-      // va.track("Slash Command Used", {
-      //   command: item.title,
-      // });
       if (item) {
-        if (item.title === "Continue writing") {
-          console.log("item-------", item);
-          complete(
-            getPrevText(editor, {
-              chars: 5000,
-              offset: 1,
-            }),
-            { body: { option: "continue" } },
-          );
+        if (item.title === "继续写作") {
+          setSomeData("continue");
+          setIsContinue(true);
         } else {
-          // command(item);
+          command(item);
         }
       }
     },
-    [complete, command, editor, items],
+    [complete, command, editor, items, completion],
   );
 
   useEffect(() => {
@@ -249,18 +232,6 @@ const CommandList = ({
     if (item && container) updateScrollView(container, item);
   }, [selectedIndex]);
 
-  const selection = editor.view.state.selection;
-  // console.log("editor+++++++++++++-----:", selection.to, completion);
-  // useEffect(() => {
-  //   if (completion === oldCompletion) { return }
-  //   editor
-  //     .chain()
-  //     .focus()
-  //     .insertContentAt(selection.to + 1, completion)
-  //     .run();
-  //   setOldCompletion(completion);
-  // }, [completion]);
-
   return items.length > 0 ? (
     <div
       id="slash-command"
@@ -269,6 +240,7 @@ const CommandList = ({
     >
       {items.map((item: CommandItemProps, index: number) => {
         return (
+          // biome-ignore lint/a11y/useButtonType: <explanation>
           <button
             className={`flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm text-stone-900 hover:bg-stone-100 ${index === selectedIndex ? "bg-stone-100 text-stone-900" : ""
               }`}
@@ -276,7 +248,11 @@ const CommandList = ({
             onClick={() => selectItem(index)}
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-md border border-stone-200 bg-white">
-              {item.title === "Continue writing" && isLoading ? null : item.icon}
+              {item.title === "继续写作" && isContinue ? (
+                <LoadingCircle />
+              ) : (
+                item.icon
+              )}
             </div>
             <div>
               <p className="font-medium">{item.title}</p>
@@ -289,6 +265,10 @@ const CommandList = ({
   ) : null;
 };
 
+const MyCommandList = React.memo((props) => {
+  return <CommandList {...props} />;
+});
+
 const renderItems = () => {
   let component: ReactRenderer | null = null;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -296,7 +276,7 @@ const renderItems = () => {
 
   return {
     onStart: (props: { editor: Editor; clientRect: DOMRect }) => {
-      component = new ReactRenderer(CommandList, {
+      component = new ReactRenderer(MyCommandList, {
         props,
         editor: props.editor,
       });
@@ -304,7 +284,8 @@ const renderItems = () => {
       // @ts-ignore
       popup = tippy("body", {
         getReferenceClientRect: props.clientRect,
-        appendTo: () => document.body,
+        // appendTo: () => document.body,
+        appendTo: document.body,
         content: component.element,
         showOnCreate: true,
         interactive: true,
@@ -313,9 +294,7 @@ const renderItems = () => {
       });
     },
     onUpdate: (props: { editor: Editor; clientRect: DOMRect }) => {
-      console.log("update--------------：：：：：");
       component?.updateProps(props);
-
       // biome-ignore lint/complexity/useOptionalChain: <explanation>
       popup &&
         popup[0].setProps({
@@ -325,10 +304,8 @@ const renderItems = () => {
     onKeyDown: (props: { event: KeyboardEvent }) => {
       if (props.event.key === "Escape") {
         popup?.[0].hide();
-
         return true;
       }
-
       // @ts-ignore
       return component?.ref?.onKeyDown(props);
     },
