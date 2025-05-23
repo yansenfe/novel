@@ -10,17 +10,17 @@ const options = [
   },
   {
     value: "fix",
-    label: "修正语法",
+    label: "重新分析",
     icon: CheckCheck,
   },
   {
     value: "shorter",
-    label: "精简文案",
+    label: "简写内容",
     icon: ArrowDownWideNarrow,
   },
   {
     value: "longer",
-    label: "丰富内容",
+    label: "扩写内容",
     icon: WrapText,
   },
 ];
@@ -64,7 +64,7 @@ const AISelectorCommands = ({ onSelect }: AISelectorCommandsProps) => {
           className="gap-2 px-4"
         >
           <StepForward className="h-4 w-4 text-purple-500" />
-          续写
+          分析内容
         </CommandItem>
       </CommandGroup>
     </>

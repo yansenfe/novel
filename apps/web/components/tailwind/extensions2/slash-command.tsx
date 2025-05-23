@@ -1,34 +1,27 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-  useRef,
-  useLayoutEffect,
-} from "react";
-import { Editor, Range, Extension } from "@tiptap/core";
-import Suggestion from "@tiptap/suggestion";
+import { getPrevText, handleImageUpload } from "@/lib/editor";
+import LoadingCircle from "@/ui/icons/loading-circle";
+import Magic from "@/ui/icons/magic";
+import { type Editor, Extension, type Range } from "@tiptap/core";
 import { ReactRenderer } from "@tiptap/react";
+import Suggestion from "@tiptap/suggestion";
+import va from "@vercel/analytics";
 import { useCompletion } from "ai/react";
-import tippy from "tippy.js";
 import {
+  CheckSquare,
+  Code,
   Heading1,
   Heading2,
   Heading3,
+  Image as ImageIcon,
   List,
   ListOrdered,
   MessageSquarePlus,
   Text,
   TextQuote,
-  Image as ImageIcon,
-  Code,
-  CheckSquare,
 } from "lucide-react";
-import LoadingCircle from "@/ui/icons/loading-circle";
+import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import va from "@vercel/analytics";
-import Magic from "@/ui/icons/magic";
-import { getPrevText, handleImageUpload } from "@/lib/editor";
+import tippy from "tippy.js";
 
 interface CommandItemProps {
   title: string;
@@ -94,12 +87,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       searchTerms: ["p", "paragraph"],
       icon: <Text size={18} />,
       command: ({ editor, range }: CommandProps) => {
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .toggleNode("paragraph", "paragraph")
-          .run();
+        editor.chain().focus().deleteRange(range).toggleNode("paragraph", "paragraph").run();
       },
     },
     {
@@ -117,12 +105,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       searchTerms: ["title", "big", "large"],
       icon: <Heading1 size={18} />,
       command: ({ editor, range }: CommandProps) => {
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .setNode("heading", { level: 1 })
-          .run();
+        editor.chain().focus().deleteRange(range).setNode("heading", { level: 1 }).run();
       },
     },
     {
@@ -131,12 +114,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       searchTerms: ["subtitle", "medium"],
       icon: <Heading2 size={18} />,
       command: ({ editor, range }: CommandProps) => {
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .setNode("heading", { level: 2 })
-          .run();
+        editor.chain().focus().deleteRange(range).setNode("heading", { level: 2 }).run();
       },
     },
     {
@@ -145,12 +123,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       searchTerms: ["subtitle", "small"],
       icon: <Heading3 size={18} />,
       command: ({ editor, range }: CommandProps) => {
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .setNode("heading", { level: 3 })
-          .run();
+        editor.chain().focus().deleteRange(range).setNode("heading", { level: 3 }).run();
       },
     },
     {
@@ -177,21 +150,14 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       searchTerms: ["blockquote"],
       icon: <TextQuote size={18} />,
       command: ({ editor, range }: CommandProps) =>
-        editor
-          .chain()
-          .focus()
-          .deleteRange(range)
-          .toggleNode("paragraph", "paragraph")
-          .toggleBlockquote()
-          .run(),
+        editor.chain().focus().deleteRange(range).toggleNode("paragraph", "paragraph").toggleBlockquote().run(),
     },
     {
       title: "代码块",
       description: "捕获代码片段。",
       searchTerms: ["codeblock"],
       icon: <Code size={18} />,
-      command: ({ editor, range }: CommandProps) =>
-        editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
+      command: ({ editor, range }: CommandProps) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
     },
     {
       title: "图片",
@@ -219,8 +185,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
       return (
         item.title.toLowerCase().includes(search) ||
         item.description.toLowerCase().includes(search) ||
-        (item.searchTerms &&
-          item.searchTerms.some((term: string) => term.includes(search)))
+        (item.searchTerms && item.searchTerms.some((term: string) => term.includes(search)))
       );
     }
     return true;
@@ -285,17 +250,12 @@ const CommandList = ({
       });
       if (item) {
         if (item.title === "续写") {
-          console.log("editor_______________",editor);
-          console.log("getPrevText+++++++++++++",getPrevText(editor, {
-            chars: 5000,
-            offset: 1,
-          }));
           complete(
             getPrevText(editor, {
               chars: 5000,
               offset: 1,
             }),
-            { body: { option : "continue" }}
+            { body: { option: "continue" } },
           );
           const selection = editor.view.state.selection;
           setSelectionTo(selection.to + 1);
@@ -334,14 +294,14 @@ const CommandList = ({
   }, [items, selectedIndex, setSelectedIndex, selectItem]);
 
   useEffect(() => {
-    completion && editor
-      .chain()
-      .focus()
-      .insertContentAt(selectionTo, completion)
-      // .setContent(completion)
-      .run();
+    completion &&
+      editor
+        .chain()
+        .focus()
+        .insertContentAt(selectionTo, completion)
+        // .setContent(completion)
+        .run();
   }, [completion]);
-
 
   useEffect(() => {
     setSelectedIndex(0);
@@ -366,18 +326,13 @@ const CommandList = ({
       {items.map((item: CommandItemProps, index: number) => {
         return (
           <button
-            className={`flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm text-stone-900 hover:bg-stone-100 ${
-              index === selectedIndex ? "bg-stone-100 text-stone-900" : ""
-            }`}
+            className={`flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm text-stone-900 hover:bg-stone-100 ${index === selectedIndex ? "bg-stone-100 text-stone-900" : ""
+              }`}
             key={index}
             onClick={() => selectItem(index)}
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-md border border-stone-200 bg-white">
-              {item.title === "续写" && isLoading ? (
-                <LoadingCircle />
-              ) : (
-                item.icon
-              )}
+              {item.title === "续写" && isLoading ? <LoadingCircle /> : item.icon}
             </div>
             <div>
               <p className="font-medium">{item.title}</p>
