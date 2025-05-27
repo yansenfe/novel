@@ -1,4 +1,5 @@
 import { getPrevText, handleImageUpload } from "@/lib/editor";
+import { matchPrompt } from "@/lib/utils";
 import LoadingCircle from "@/ui/icons/loading-circle";
 import Magic from "@/ui/icons/magic";
 import { type Editor, Extension, type Range } from "@tiptap/core";
@@ -22,7 +23,6 @@ import {
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import tippy from "tippy.js";
-
 interface CommandItemProps {
   title: string;
   description: string;
@@ -251,10 +251,10 @@ const CommandList = ({
       if (item) {
         if (item.title === "续写") {
           complete(
-            getPrevText(editor, {
+            matchPrompt("continue", getPrevText(editor, {
               chars: 5000,
               offset: 1,
-            }),
+            })),
             { body: { option: "continue" } },
           );
           const selection = editor.view.state.selection;

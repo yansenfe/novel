@@ -1,6 +1,6 @@
-import { CommandGroup, CommandItem, CommandSeparator } from "../ui/command";
-import { useEditor } from "novel";
 import { Check, TextQuote, TrashIcon } from "lucide-react";
+import { useEditor } from "novel";
+import { CommandGroup, CommandItem, CommandSeparator } from "../ui/command";
 
 const AICompletionCommands = ({
   completion,
@@ -33,7 +33,7 @@ const AICompletionCommands = ({
           }}
         >
           <Check className="h-4 w-4 text-muted-foreground" />
-          替换选择的文案
+          替换选中的文案
         </CommandItem>
         <CommandItem
           className="gap-2 px-4"
@@ -48,7 +48,7 @@ const AICompletionCommands = ({
           }}
         >
           <TextQuote className="h-4 w-4 text-muted-foreground" />
-          添加到下面
+          添加到文档
         </CommandItem>
       </CommandGroup>
       <CommandSeparator />

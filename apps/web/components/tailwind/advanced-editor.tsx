@@ -1,5 +1,6 @@
 "use client";
 import { AppContext } from "@/contexts/AppContext";
+import { matchPrompt } from "@/lib/utils";
 // import { EditorContent } from "@/packages/novel/src";
 import { useEditor } from "@tiptap/react";
 import { useCompletion } from "ai/react";
@@ -33,7 +34,6 @@ import { NodeSelector } from "./selectors/node-selector";
 import { TextButtons } from "./selectors/text-buttons";
 import { slashCommand, suggestionItems } from "./slash-command";
 import { Separator } from "./ui/separator";
-
 const hljs = require("highlight.js");
 const defaultEditorContent = { type: "doc", content: [{ type: "heading", attrs: { level: 4 } }] };
 const extensions = [...defaultExtensions, slashCommand];
@@ -106,7 +106,11 @@ const TailwindAdvancedEditor = () => {
 
   useEffect(() => {
     if (someData === "continue") {
-      complete(window.localStorage.getItem("markdown"), { body: { option: "continue" } });
+      let mycontent = window.localStorage.getItem("markdown");
+      if (mycontent.includes('\n')) {
+        mycontent = mycontent.split('\n').slice(-1)[0];
+      }
+      complete(matchPrompt("continue", mycontent), { body: { option: "continue" } });
     }
   }, [someData]);
 
@@ -130,10 +134,13 @@ const TailwindAdvancedEditor = () => {
 
   useEffect(() => {
     if (completion) {
+      // 获取光标位置
+      const selection = Number(window.localStorage.getItem("selectionTo"))  // 10;
+      const markdownContent = window.localStorage.getItem("markdown");
       editor
         .chain()
         .focus()
-        .setContent(`${window.localStorage.getItem("markdown").slice(0, -1)}${completion}`)
+        .setContent(`${markdownContent.slice(0, selection - 2)}${completion}${markdownContent.slice(selection - 1)}`)
         .run();
       setSaveStatus("未保存");
     }

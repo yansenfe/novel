@@ -184,6 +184,8 @@ const CommandList = ({
       const item = items[index];
       if (item) {
         if (item.title === "续写") {
+          const selection = editor.view.state.selection;
+          window.localStorage.setItem("selectionTo", selection.to);
           setSomeData("continue");
           setIsContinue(true);
         } else {

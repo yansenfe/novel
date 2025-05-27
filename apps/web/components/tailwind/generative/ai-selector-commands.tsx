@@ -5,12 +5,12 @@ import { CommandGroup, CommandItem, CommandSeparator } from "../ui/command";
 const options = [
   {
     value: "improve",
-    label: "提高写作水平",
+    label: "重新生成",
     icon: RefreshCcwDot,
   },
   {
     value: "fix",
-    label: "重新分析",
+    label: "语法纠正",
     icon: CheckCheck,
   },
   {

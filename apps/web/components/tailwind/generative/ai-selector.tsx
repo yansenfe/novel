@@ -1,7 +1,7 @@
 "use client";
 
 import { Command, CommandInput } from "@/components/tailwind/ui/command";
-
+import { matchPrompt } from "@/lib/utils";
 import { useCompletion } from "ai/react";
 import { ArrowUp } from "lucide-react";
 import { useEditor } from "novel";
@@ -15,8 +15,6 @@ import Magic from "../ui/icons/magic";
 import { ScrollArea } from "../ui/scroll-area";
 import AICompletionCommands from "./ai-completion-command";
 import AISelectorCommands from "./ai-selector-commands";
-//TODO: I think it makes more sense to create a custom Tiptap extension for this functionality https://tiptap.dev/docs/editor/ai/introduction
-
 interface AISelectorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -78,14 +76,14 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
               className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-purple-500 hover:bg-purple-900"
               onClick={() => {
                 if (completion)
-                  return complete(completion, {
+                  return complete(matchPrompt("zap", completion), {
                     body: { option: "zap", command: inputValue },
                   }).then(() => setInputValue(""));
 
                 const slice = editor.state.selection.content();
                 const text = editor.storage.markdown.serializer.serialize(slice.content);
 
-                complete(text, {
+                complete(matchPrompt("zap", text), {
                   body: { option: "zap", command: inputValue },
                 }).then(() => setInputValue(""));
               }}
@@ -102,7 +100,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
               completion={completion}
             />
           ) : (
-            <AISelectorCommands onSelect={(value, option) => complete(value, { body: { option } })} />
+            <AISelectorCommands onSelect={(value, option) => complete(matchPrompt(option, value), { body: { option } })} />
           )}
         </>
       )}
