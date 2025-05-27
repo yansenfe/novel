@@ -66,7 +66,6 @@ const TailwindAdvancedEditor = () => {
     window.localStorage.setItem("html-content", highlightCodeblocks(editor.getHTML()));
     window.localStorage.setItem("novel-content", JSON.stringify(json));
     window.localStorage.setItem("markdown", getMarkdown);
-    // console.log('someData', someData)
     if (someData !== "continue") {
       setSaveStatus("已保存");
     }
@@ -106,7 +105,9 @@ const TailwindAdvancedEditor = () => {
 
   useEffect(() => {
     if (someData === "continue") {
-      let mycontent = window.localStorage.getItem("markdown");
+      const selection = Number(window.localStorage.getItem("selectionTo"))  // 10;
+      const markdownContent = window.localStorage.getItem("markdown");
+      let mycontent = markdownContent.slice(0, selection - 2);
       if (mycontent.includes('\n')) {
         mycontent = mycontent.split('\n').slice(-1)[0];
       }
