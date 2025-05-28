@@ -1,1 +1,4 @@
 .vercel
+out
+node_modules
+
