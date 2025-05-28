@@ -34,6 +34,7 @@ import { NodeSelector } from "./selectors/node-selector";
 import { TextButtons } from "./selectors/text-buttons";
 import { slashCommand, suggestionItems } from "./slash-command";
 import { Separator } from "./ui/separator";
+
 const hljs = require("highlight.js");
 const defaultEditorContent = { type: "doc", content: [{ type: "heading", attrs: { level: 4 } }] };
 const extensions = [...defaultExtensions, slashCommand];
@@ -159,7 +160,7 @@ const TailwindAdvancedEditor = () => {
       </div>
 
       {!editorShow && (
-        <div className="editor-rendor relative min-h-[500px] w-full max-w-screen-lg border-muted bg-background sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:shadow-lg">
+        <div className="editor-rendor relative min-h-[500px] w-full max-w-screen-lg bg-background">
           <div>
             <EditorContentRendor editor={editor} />
           </div>
@@ -172,7 +173,7 @@ const TailwindAdvancedEditor = () => {
             initialContent={initialContent}
             extensions={extensions}
             ref={myEditorRef}
-            className="relative min-h-[500px] w-full max-w-screen-lg border-muted bg-background sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:shadow-lg"
+            className="relative min-h-[500px] w-full max-w-screen-lg bg-background"
             editorProps={{
               handleDOMEvents: {
                 keydown: (_view, event) => {
