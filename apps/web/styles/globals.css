@@ -162,6 +162,10 @@ pre {
   }
 }
 
-.ProseMirror .is-empty::before{
+.ProseMirror .is-empty::before {
   content: "输入'/'打开指令" !important;
+}
+
+.nextjs-toast {
+  display: none;
 }

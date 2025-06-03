@@ -70,6 +70,8 @@ const TailwindAdvancedEditor = () => {
     if (someData !== "continue") {
       setSaveStatus("已保存");
     }
+
+    window.parent.postMessage({ type: 'handleUpdate' }, '*');
   }, 500);
 
   const oldDebouncedUpdates = useDebouncedCallback(async (editor) => {
@@ -87,6 +89,8 @@ const TailwindAdvancedEditor = () => {
         myEditorRef.current.focus();
       }
     }, 100);
+
+    window.parent.postMessage({ type: 'handleUpdate' }, '*');
   }, 500);
 
   const editor = useEditor({
@@ -152,7 +156,7 @@ const TailwindAdvancedEditor = () => {
 
   return (
     <div className="relative w-full max-w-screen-lg">
-      <div className="flex absolute right-5 top-5 z-10 mb-5 gap-2">
+      <div className="flex absolute right-5 top-0 z-10 mb-5 gap-2">
         <div className="rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground">{saveStatus}</div>
         {/* <div className={charsCount ? "rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground" : "hidden"}>
           {charsCount} Words
